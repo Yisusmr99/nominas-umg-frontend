@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  next_app:
+    build: .
+    container_name: next_app
+    working_dir: /app
+    volumes:
+      - .:/app           # Monta el código fuente para que los cambios se reflejen en el contenedor
+      - /app/node_modules  # Usa el directorio de node_modules propio del contenedor
+    ports:
+      - "3002:3002"      # Expone el puerto 4200 para el servidor de Angular
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # Necesario para que el watch funcione correctamente en entornos Docker
