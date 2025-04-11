@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'; // Necesario para manejar eventos en el cliente
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation'; // Importar useRouter
@@ -22,7 +23,8 @@ export default function LoginPage() {
       localStorage.setItem('user', JSON.stringify(data.data.user));
       localStorage.setItem('token', data.data.token);
       router.push('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error during login:', error);
     }
   };
 
@@ -32,12 +34,12 @@ export default function LoginPage() {
       <div className="flex flex-col justify-center w-full px-6 py-12 lg:w-1/2">
         <div className="mx-auto w-full max-w-sm">
             <Image
-                src="/logo.png"
-                alt="Logo"
-                width={100 * 1.5}
-                height={100 * 1.5}
-                className="mx-auto w-auto"
-                priority
+              src="/logo.png"
+              alt="Logo"
+              width={100 * 1.5}
+              height={100 * 1.5}
+              className="mx-auto w-auto"
+              priority
             />
           <h2 className="mt-8 text-2xl font-bold tracking-tight text-gray-900">
             Sign in to your account

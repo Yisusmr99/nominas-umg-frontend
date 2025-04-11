@@ -14,16 +14,17 @@ import {
   Bars3Icon,
   XMarkIcon,
   HomeIcon,
-  FolderIcon,
 } from '@heroicons/react/24/outline'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon, ArrowTrendingDownIcon, ArrowTrendingUpIcon } from '@heroicons/react/20/solid'
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { logout } from '@/services/auth'
+import { ToastContainer } from 'react-toastify'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Projects', href: '/dashboard/projects', icon: FolderIcon },
+  { name: 'Deducciones', href: '/deductions', icon: ArrowTrendingDownIcon },
+  { name: 'Bonos', href: '/bonus', icon: ArrowTrendingUpIcon },
 ]
 
 interface User {
@@ -246,8 +247,9 @@ export function MainLayout({ children }: MainLayoutProps) {
           </div>
 
           {/* Main Content Area */}
-          <main className="flex-1 py-10">
+          <main className="flex-1 py-10" style={{ height: 'calc(100vh - 350px)' }}>
             <div className="px-4 sm:px-6 lg:px-8 h-full">
+              <ToastContainer />
               {children}
             </div>
           </main>
