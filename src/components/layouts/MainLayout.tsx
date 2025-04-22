@@ -13,18 +13,22 @@ import {
 import {
   Bars3Icon,
   XMarkIcon,
-  HomeIcon,
+  // HomeIcon,
 } from '@heroicons/react/24/outline'
-import { ChevronDownIcon, ArrowTrendingDownIcon, ArrowTrendingUpIcon } from '@heroicons/react/20/solid'
+import { 
+  ChevronDownIcon, ArrowTrendingDownIcon, ArrowTrendingUpIcon,
+  ClipboardDocumentCheckIcon, ReceiptPercentIcon, UserGroupIcon
+} from '@heroicons/react/20/solid'
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { logout } from '@/services/auth'
-import { ToastContainer } from 'react-toastify'
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+  { name: 'Usuarios', href: '/users', icon: UserGroupIcon },
   { name: 'Deducciones', href: '/deductions', icon: ArrowTrendingDownIcon },
   { name: 'Bonos', href: '/bonus', icon: ArrowTrendingUpIcon },
+  { name: 'Tipos de contrato', href: '/contract-types', icon: ClipboardDocumentCheckIcon },
+  { name: 'Tipos de nómina', href: '/payroll-types', icon: ReceiptPercentIcon },
 ]
 
 interface User {
@@ -66,7 +70,8 @@ export function MainLayout({ children }: MainLayoutProps) {
     try {
       const userData = JSON.parse(userStr)
       setUser(userData)
-    } catch (error) {
+    } catch (error: any) {
+      console.log('Error parsing user data:', error)
       localStorage.removeItem('user')
       localStorage.removeItem('token')
       router.push('/auth/login')
@@ -249,7 +254,6 @@ export function MainLayout({ children }: MainLayoutProps) {
           {/* Main Content Area */}
           <main className="flex-1 py-10" style={{ height: 'calc(100vh - 350px)' }}>
             <div className="px-4 sm:px-6 lg:px-8 h-full">
-              <ToastContainer />
               {children}
             </div>
           </main>

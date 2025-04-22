@@ -7,9 +7,10 @@ interface ToastProps {
     type: string;
     position: ToastPosition;
     handleDelete?: (value: boolean) => void;
+    promise?: Promise<unknown>;
 }
 
-export default function Toast({ message, type, position, handleDelete }: ToastProps) {
+export default function Toast({ message, type, position, handleDelete, promise }: ToastProps) {
     
     if(type === "success") {
         return toast.success(message, {
@@ -49,5 +50,25 @@ export default function Toast({ message, type, position, handleDelete }: ToastPr
                 draggable: false,
             }
         );
+    }
+
+    if(type === "promise"){
+        if (promise) {
+            return toast.promise(promise, {
+                pending: message,
+                success: {
+                    render({data}){
+                        // When the promise reject, data will contains the error
+                        return (data as { message: string }).message
+                    },
+                },
+                error: {
+                    render({data}){
+                        // When the promise reject, data will contains the error
+                        return (data as { message: string }).message
+                    }
+                }
+            });
+        }
     }
 }

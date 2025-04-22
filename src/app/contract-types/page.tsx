@@ -2,84 +2,85 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { getBonuses, createBonus, updateBonus, deleteBonus } from "@/services/bonus";
 import Table from "@/components/ui/table";
-import BonusModal from "@/components/bonus/BonusModal";
 import { Backdrop, CircularProgress } from "@mui/material";
 import Toast from "@/components/ui/Toast";
 import { toast } from "react-toastify";
+import { 
+    getContractTypes, createContractType,
+    updateContractType, deleteContractType 
+} from "@/services/contract-type";
+import ContractTypeModal from "@/components/contract-types/ContracTypeModal";
 
 const columns = [
-    { name: "Nombre", nameFile: "bonu_name", },
-    { name: "Porcentaje de bonificacion", nameFile: "bonu_percentage", },
-    { name: "Monto fijo", nameFile: "bonu_fixed_amount", },
+    { name: "Nombre del tipo de contrato", nameFile: "name", },
 ];
 
 export default function BonusPage() {
 
-    const [bonuses, setBonuses] = useState<any[]>([]);
+    const [contractTypes, setContractTypes] = useState<any[]>([]);
+
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [createUpdateLoading, setCreateUpdateLoading] = useState(false);
-    const [selectedBonus, setSelectedBonus] = useState<any>(null);
+    const [selectedContractType, setSelectedContractType] = useState<any>(null);
 
     useEffect(() => {
-        const fetchBonuses = async () => {
+        const fetchContractTypes = async () => {
             try {
-                const data = await getBonuses();
-                setBonuses(data.data);
+                const data = await getContractTypes();
+                setContractTypes(data.data);
             } catch (error) {
                 Toast({ 
-                    message: "Error al obtener los bonos: " + error, 
+                    message: "Error al obtener los tipos de contrato: " + error, 
                     type: "error", position: "top-right" 
                 });
             } finally {
                 setLoading(false);
             }
-        };
+        }
 
-        fetchBonuses();
+        fetchContractTypes();
     }, []);
 
     const handleAdd = () => {
-        setSelectedBonus(null);
+        setSelectedContractType(null);
         setIsModalOpen(true);
     };
 
     const handleEdit = (id: number) => {
-        const bonusToEdit = bonuses.find((bonus) => bonus.id === id);
-        setSelectedBonus(bonusToEdit);
+        const contractTypeToEdit = contractTypes.find((contractType) => contractType.id === id);
+        setSelectedContractType(contractTypeToEdit);
         setIsModalOpen(true);
     };
 
     const handleDelete = (id: number) => {
         Toast({
-            message: "¿Estás seguro de eliminar este bono?",
+            message: "¿Estás seguro de eliminar este tipo de contrato?",
             type: "question",
             position: "top-right",
             handleDelete: async (value: boolean) => {
                 toast.dismiss();
-                if (!value){ 
+                if (!value) {
                     return;
                 }
-
+                
                 try {
-                    setCreateUpdateLoading(true);
-                    await deleteBonus(id);
-                    setBonuses((prevBonuses) => prevBonuses.filter((bonus) => bonus.id !== id));
+                    await deleteContractType(id);
+                    setContractTypes((prevContractTypes) =>
+                        prevContractTypes.filter((contractType) => contractType.id !== id)
+                    );
                     Toast({
-                        message: "Bono eliminado exitosamente",
+                        message: "Tipo de contrato eliminado exitosamente",
                         type: "success",
                         position: "top-right"
                     });
-                } catch (error: any) {
+                } catch (error) {
                     Toast({ 
-                        message: "Error al eliminar el bono: " + error.message, 
+                        message: "Error al eliminar el tipo de contrato: " + error, 
                         type: "error", position: "top-right" 
                     });
-                } finally {
-                    setCreateUpdateLoading(false);
-                }
+                }   
             }
         });
     };
@@ -92,7 +93,7 @@ export default function BonusPage() {
             if (id === null) await handleCreate(data);
         } catch (error: any) {
             Toast({ 
-                message: "Error al guardar el bono: " + error.message,
+                message: "Error al guardar el tipo de contrato: " + error.message,
                 type: "error", position: "top-right" 
             });
         }finally{
@@ -101,9 +102,11 @@ export default function BonusPage() {
     };
 
     const handleUpdate = async (data: any) => {
-        const response = await updateBonus(data.id, data);
-        setBonuses((prevBonuses) =>
-            prevBonuses.map((bonus) => (bonus.id === data.id ? response.data : bonus))
+        const response = await updateContractType(data.id, data);
+        setContractTypes((prevContractTypes) =>
+            prevContractTypes.map((contractType) =>
+                contractType.id === data.id ? response.data : contractType
+            )
         );
         Toast({
             message: "Bono actualizado exitosamente",
@@ -113,8 +116,8 @@ export default function BonusPage() {
     }
 
     const handleCreate = async (data: any) => {
-        const response = await createBonus(data);
-        setBonuses((prevBonuses) => [...prevBonuses, response.data]);
+        const response = await createContractType(data);
+        setContractTypes((prevContractTypes) => [...prevContractTypes, response.data]);
         Toast({
             message: "Bono creado exitosamente",
             type: "success",
@@ -124,14 +127,14 @@ export default function BonusPage() {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setSelectedBonus(null);
+        setSelectedContractType(null);
     };
 
     return (
         <>
             <Table
                 loading={loading}
-                data={bonuses}
+                data={contractTypes}
                 title="Bonos"
                 description="Lista de bonos disponibles en el sistema."
                 columns={columns}
@@ -139,11 +142,11 @@ export default function BonusPage() {
                 handleEdit={handleEdit}
                 handleDelete={handleDelete}
             />
-            <BonusModal 
+            <ContractTypeModal
                 isOpen={isModalOpen}
-                onClose={handleCloseModal}
+                onClose={handleCloseModal}  
                 onSave={handleSave}
-                bonus={selectedBonus}
+                contractType={selectedContractType}
             />
             {createUpdateLoading && (
                 <Backdrop open sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>

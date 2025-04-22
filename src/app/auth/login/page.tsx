@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation'; // Importar useRouter
 import React, { useState } from 'react';
 import { login } from '@/services/auth'; // Importar la función de login
 import Image from 'next/image';
+import Toast from '@/components/ui/Toast';
 
 export default function LoginPage() {
   const router = useRouter(); // Instancia de useRouter
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -18,14 +20,28 @@ export default function LoginPage() {
     event.preventDefault();
     const email = (event.target as any).email.value;
     const password = (event.target as any).password.value;
-    try {
-      const data = await login({ email, password });
+
+    // Crear la promesa sin await
+    const loginPromise = login({ email, password });
+    setLoading(true);
+    
+    Toast({
+      message: 'Validando credenciales...',
+      type: 'promise',
+      position: 'top-right',
+      handleDelete: undefined,
+      promise: loginPromise,
+    });
+
+    loginPromise.then((data) => {
       localStorage.setItem('user', JSON.stringify(data.data.user));
       localStorage.setItem('token', data.data.token);
       router.push('/dashboard');
-    } catch (error: any) {
+    }).catch((error: any) => {
       console.error('Error during login:', error);
-    }
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
   return (
@@ -98,10 +114,11 @@ export default function LoginPage() {
 
             <div>
               <button
+                disabled={loading}
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="flex w-full justify-center rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign in
+                {loading ? "Cargando..." : "Sign in"}
               </button>
             </div>
           </form>
