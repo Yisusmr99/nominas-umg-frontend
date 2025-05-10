@@ -1,10 +1,15 @@
 'use client'
-import { MainLayout } from '@/components/layouts/MainLayout'
+import MainLayout from '@/components/layouts/MainLayout'
+import AuthGuard from '@/components/auth/AuthGuard'
 
-export default function ContractTypesLayout({ children }: { children: React.ReactNode }) {
+export default function ContractTypesLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <MainLayout>
-      {children}
-    </MainLayout>
+    <AuthGuard>
+      <MainLayout>{children}</MainLayout>
+    </AuthGuard>
   )
 }

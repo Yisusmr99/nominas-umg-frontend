@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-
 import React, { useState, useEffect } from "react";
 import Table from "@/components/ui/table";
 import { Backdrop, CircularProgress } from "@mui/material";

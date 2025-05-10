@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'; // Necesario para manejar eventos en el cliente
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation'; // Importar useRouter
@@ -36,7 +35,15 @@ export default function LoginPage() {
     loginPromise.then((data) => {
       localStorage.setItem('user', JSON.stringify(data.data.user));
       localStorage.setItem('token', data.data.token);
-      router.push('/dashboard');
+
+      if(data.data.user.role.id === 1) {
+        router.push('/payrolls')
+      }else if(data.data.user.role.id === 2) {
+        router.push('/payments')
+      }else{
+        router.push('/dashboard')
+      }
+      
     }).catch((error: any) => {
       console.error('Error during login:', error);
     }).finally(() => {

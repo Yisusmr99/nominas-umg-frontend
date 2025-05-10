@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import {
   Dialog,
   DialogBackdrop,
@@ -13,36 +13,29 @@ import {
 import {
   Bars3Icon,
   XMarkIcon,
-  // HomeIcon,
 } from '@heroicons/react/24/outline'
 import { 
   ChevronDownIcon, ArrowTrendingDownIcon, ArrowTrendingUpIcon,
-  ClipboardDocumentCheckIcon, ReceiptPercentIcon, UserGroupIcon
+  ClipboardDocumentCheckIcon, ReceiptPercentIcon, UserGroupIcon,
+  DocumentPlusIcon
 } from '@heroicons/react/20/solid'
 import { usePathname, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import Image from 'next/image'
 import { logout } from '@/services/auth'
+import { hasAccess } from '@/middleware/roleMiddleware';
+import { User } from '@/types/auth';
+import { Tooltip } from '@mui/material'
 
-const navigation = [
+const navigationItems = [
+  { name: 'Nóminas', href: '/payrolls', icon: DocumentPlusIcon },
   { name: 'Usuarios', href: '/users', icon: UserGroupIcon },
   { name: 'Deducciones', href: '/deductions', icon: ArrowTrendingDownIcon },
   { name: 'Bonos', href: '/bonus', icon: ArrowTrendingUpIcon },
   { name: 'Tipos de contrato', href: '/contract-types', icon: ClipboardDocumentCheckIcon },
   { name: 'Tipos de nómina', href: '/payroll-types', icon: ReceiptPercentIcon },
+  { name: 'Pagos de nómina', href: '/payments', icon: ReceiptPercentIcon },
 ]
-
-interface User {
-  id: number
-  username: string
-  name: string
-  last_name: string
-  email: string
-  role_id: number
-  is_active: number
-  email_verified_at: string | null
-  created_at: string
-  updated_at: string
-}
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -52,31 +45,33 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
-export function MainLayout({ children }: MainLayoutProps) {
+export default function MainLayout({ children }: MainLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true)
   const [user, setUser] = useState<User | null>(null)
+  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
 
-  useEffect(() => {
-    const userStr = localStorage.getItem('user')
-    const token = localStorage.getItem('token')
-    
-    if (!userStr || !token) {
-      router.push('/auth/login')
-      return
-    }
+  const navigation = useMemo(() => navigationItems
+    .filter(item => mounted ? hasAccess(item.href) : false) // Return empty while not mounted
+    .map(item => ({
+      ...item,
+      current: pathname === item.href
+    })), [pathname, mounted])
 
-    try {
-      const userData = JSON.parse(userStr)
-      setUser(userData)
-    } catch (error: any) {
-      console.log('Error parsing user data:', error)
-      localStorage.removeItem('user')
-      localStorage.removeItem('token')
-      router.push('/auth/login')
+  useEffect(() => {
+    setMounted(true)
+    const userStr = localStorage.getItem('user')
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr)
+        setUser(userData)
+      } catch (error) {
+        console.error('Error parsing user data:', error)
+      }
     }
-  }, [router])
+  }, [])
 
   const handleSignOut = async () => {
     try {
@@ -129,12 +124,12 @@ export function MainLayout({ children }: MainLayoutProps) {
                 </div>
                 <nav className="flex flex-1 flex-col">
                   <ul role="list" className="-mx-2 space-y-1">
-                    {navigation.map((item) => (
-                      <li key={item.name}>
-                        <a
+                    {mounted && navigation.map((item) => (
+                      <li key={item.href}>
+                        <Link
                           href={item.href}
                           className={classNames(
-                            pathname === item.href
+                            item.current
                               ? 'bg-gray-50 text-indigo-600'
                               : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
                             'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
@@ -143,14 +138,14 @@ export function MainLayout({ children }: MainLayoutProps) {
                           <item.icon
                             aria-hidden="true"
                             className={classNames(
-                              pathname === item.href
+                              item.current
                                 ? 'text-indigo-600'
                                 : 'text-gray-400 group-hover:text-indigo-600',
                               'size-6 shrink-0',
                             )}
                           />
                           {item.name}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
@@ -161,42 +156,75 @@ export function MainLayout({ children }: MainLayoutProps) {
         </Dialog>
 
         {/* Desktop Sidebar */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div className={classNames(
+          'fixed inset-y-0 z-50 flex flex-col transition-all duration-300',
+          desktopSidebarOpen ? 'w-72' : 'w-16',
+          'hidden lg:flex'
+        )}>
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-            <div className="flex h-16 shrink-0 items-center">
-              <Image
-                src="/logo.png"
-                alt="Logo"
-                width={100 * 2}
-                height={100 * 1.5}
-                className="mx-auto h-16 w-auto"
-                priority
-              />
-            </div>
-            <nav className="flex flex-1 flex-col">
-              <ul role="list" className="-mx-2 space-y-1">
-                {navigation.map((item) => (
-                  <li key={item.name}>
-                    <a
-                      href={item.href}
-                      className={classNames(
-                        pathname === item.href
-                          ? 'bg-gray-50 text-indigo-600'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
-                        'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
-                      )}
-                    >
-                      <item.icon
-                        aria-hidden="true"
+            {desktopSidebarOpen && (
+              <div className="flex h-16 shrink-0 items-center justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="Logo"
+                  width={100 * 2}
+                  height={100 * 1.5}
+                  className="mx-auto h-16 w-auto"
+                  priority
+                />
+              </div>
+            )}
+            <nav className={classNames(
+              "flex flex-1 flex-col",
+              !desktopSidebarOpen && "pt-4"
+            )}>
+              <ul role="list" className={classNames(
+                "-mx-2 space-y-1",
+                !desktopSidebarOpen && "-ml-4"
+              )}>
+                {mounted && navigation.map((item) => (
+                  <li key={item.href}>
+                    {!desktopSidebarOpen ? (
+                      <Tooltip title={item.name} arrow placement="right">
+                        <Link
+                          href={item.href}
+                          className={classNames(
+                            item.current ? 'bg-gray-50 text-primary' : 'text-gray-700 hover:text-primary hover:bg-gray-50',
+                            'group flex items-center rounded-md p-2 text-sm leading-6 font-semibold',
+                            'justify-center w-10'
+                          )}
+                        >
+                          {item.icon && (
+                            <item.icon
+                              className={classNames(
+                                item.current ? 'text-primary' : 'text-gray-400 group-hover:text-primary',
+                                'h-6 w-6 shrink-0'
+                              )}
+                              aria-hidden="true"
+                            />
+                          )}
+                        </Link>
+                      </Tooltip>
+                    ) : (
+                      <Link
+                        href={item.href}
                         className={classNames(
-                          pathname === item.href
-                            ? 'text-indigo-600'
-                            : 'text-gray-400 group-hover:text-indigo-600',
-                          'size-6 shrink-0',
+                          item.current ? 'bg-gray-50 text-primary' : 'text-gray-700 hover:text-primary hover:bg-gray-50',
+                          'group flex items-center rounded-md p-2 text-sm leading-6 font-semibold'
                         )}
-                      />
-                      {item.name}
-                    </a>
+                      >
+                        {item.icon && (
+                          <item.icon
+                            className={classNames(
+                              item.current ? 'text-primary' : 'text-gray-400 group-hover:text-primary',
+                              'h-6 w-6 shrink-0'
+                            )}
+                            aria-hidden="true"
+                          />
+                        )}
+                        <span className="ml-3">{item.name}</span>
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -205,11 +233,22 @@ export function MainLayout({ children }: MainLayoutProps) {
         </div>
 
         {/* Main Content */}
-        <div className="lg:pl-72 min-h-screen flex flex-col">
+        <div className={classNames(
+          'transition-all duration-300',
+          desktopSidebarOpen ? 'lg:pl-72' : 'lg:pl-16',
+          'min-h-screen flex flex-col'
+        )}>
           {/* Header */}
           <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+            {/* Mobile menu button */}
             <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-700 lg:hidden">
               <span className="sr-only">Open sidebar</span>
+              <Bars3Icon aria-hidden="true" className="size-6" />
+            </button>
+
+            {/* Desktop menu button */}
+            <button type="button" onClick={() => setDesktopSidebarOpen(!desktopSidebarOpen)} className="-m-2.5 p-2.5 text-gray-700 hidden lg:block">
+              <span className="sr-only">Toggle sidebar</span>
               <Bars3Icon aria-hidden="true" className="size-6" />
             </button>
 

@@ -1,14 +1,11 @@
-import { MainLayout } from '@/components/layouts/MainLayout'
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Tipos de Nómina",
-};
+'use client'
+import AuthGuard from '@/components/auth/AuthGuard'
+import MainLayout from '@/components/layouts/MainLayout'
 
 export default function PayrollTypeLayout({ children }: { children: React.ReactNode }) {
   return (
-    <MainLayout>
-      {children}
-    </MainLayout>
+    <AuthGuard>
+      <MainLayout>{children}</MainLayout>
+    </AuthGuard>
   )
 }
