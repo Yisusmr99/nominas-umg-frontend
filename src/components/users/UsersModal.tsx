@@ -255,8 +255,10 @@ const UsersModal: React.FC<UsersModalProps> = ({
                                 label="Fecha de Contratación"
                                 value={formData.hire_date}
                                 onChange={handleDateChange}
-                                slotProps={{
-                                    textField: {
+                                slotProps={{ 
+                                    textField: { 
+                                        size: 'small',
+                                        sx: { minWidth: 200 },
                                         fullWidth: true,
                                         error: !!errors.hire_date,
                                         helperText: errors.hire_date

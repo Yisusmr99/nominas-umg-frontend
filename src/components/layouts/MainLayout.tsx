@@ -17,7 +17,7 @@ import {
 import { 
   ChevronDownIcon, ArrowTrendingDownIcon, ArrowTrendingUpIcon,
   ClipboardDocumentCheckIcon, ReceiptPercentIcon, UserGroupIcon,
-  DocumentPlusIcon
+  DocumentPlusIcon, DocumentChartBarIcon, PresentationChartLineIcon
 } from '@heroicons/react/20/solid'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -29,12 +29,14 @@ import { Tooltip } from '@mui/material'
 
 const navigationItems = [
   { name: 'Nóminas', href: '/payrolls', icon: DocumentPlusIcon },
+  { name: 'Pagos de nómina', href: '/payments', icon: ReceiptPercentIcon },
   { name: 'Usuarios', href: '/users', icon: UserGroupIcon },
+  { name: 'Reportes', href: '/reports', icon: DocumentChartBarIcon },
+  { name: 'Evaluaciones de desempeño', href: '/performance-evaluations', icon: PresentationChartLineIcon },
   { name: 'Deducciones', href: '/deductions', icon: ArrowTrendingDownIcon },
   { name: 'Bonos', href: '/bonus', icon: ArrowTrendingUpIcon },
   { name: 'Tipos de contrato', href: '/contract-types', icon: ClipboardDocumentCheckIcon },
   { name: 'Tipos de nómina', href: '/payroll-types', icon: ReceiptPercentIcon },
-  { name: 'Pagos de nómina', href: '/payments', icon: ReceiptPercentIcon },
 ]
 
 interface MainLayoutProps {

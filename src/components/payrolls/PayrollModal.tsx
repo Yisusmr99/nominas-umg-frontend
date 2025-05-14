@@ -13,6 +13,9 @@ import {
   Grid,
   CircularProgress
 } from '@mui/material';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 import { getBonuses } from '@/services/bonus';
 import { getDeductions } from '@/services/deduction';
 import { getContractTypes } from '@/services/contract-type';
@@ -121,8 +124,8 @@ const PayrollModal: React.FC<PayrollModalProps> = ({ isOpen, onClose, onSave, pa
     return format(end, 'yyyy-MM-dd');
   };
 
-  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const startDate = e.target.value;
+  const handleStartDateChange = (newValue: any) => {
+    const startDate = newValue ? newValue.format('YYYY-MM-DD') : '';
 
     if (formData.payroll_type_id === '1') {
       const endDate = calculateEndDate(startDate, formData.contract_type_id);
@@ -139,10 +142,11 @@ const PayrollModal: React.FC<PayrollModalProps> = ({ isOpen, onClose, onSave, pa
     }
   };
 
-  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEndDateChange = (newValue: any) => {
+    const endDate = newValue ? newValue.format('YYYY-MM-DD') : '';
     setFormData(prev => ({
       ...prev,
-      period_end: e.target.value
+      period_end: endDate
     }));
   };
 
@@ -223,32 +227,37 @@ const PayrollModal: React.FC<PayrollModalProps> = ({ isOpen, onClose, onSave, pa
                 ))}
               </TextField>
 
-              <TextField
-                name="period_start"
-                label="Fecha Inicio"
-                type="date"
-                value={formData.period_start}
-                onChange={handleStartDateChange}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                disabled={!formData.contract_type_id}
-                helperText={
-                  formData.contract_type_id === '1' && formData.payroll_type_id === '1' ? 'El período será de 7 días' :
-                  formData.contract_type_id === '2' && formData.payroll_type_id === '1' ? 'El período será de 15 días' :
-                  formData.contract_type_id === '3' && formData.payroll_type_id === '1' ? 'El período será de 30 días' : ''
-                }
-              />
-
-              <TextField
-                name="period_end"
-                label="Fecha Fin"
-                type="date"
-                value={formData.period_end}
-                onChange={handleEndDateChange}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                disabled={formData.payroll_type_id === '1'}
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Fecha Inicio"
+                  value={formData.period_start ? dayjs(formData.period_start) : null}
+                  onChange={(newValue) => handleStartDateChange(newValue)}
+                  slotProps={{ 
+                      textField: { 
+                          size: 'small',
+                          sx: { minWidth: 200 },
+                          fullWidth: true,
+                          disabled: !formData.contract_type_id,
+                          helperText: formData.contract_type_id === '1' && formData.payroll_type_id === '1' ? 'El período será de 7 días' :
+                                    formData.contract_type_id === '2' && formData.payroll_type_id === '1' ? 'El período será de 15 días' :
+                                    formData.contract_type_id === '3' && formData.payroll_type_id === '1' ? 'El período será de 30 días' : ''
+                      } 
+                  }}
+                />
+                <DatePicker
+                  label="Fecha Fin"
+                  value={formData.period_end ? dayjs(formData.period_end) : null}
+                  onChange={(newValue) => handleEndDateChange(newValue)}
+                  slotProps={{ 
+                      textField: { 
+                          size: 'small',
+                          sx: { minWidth: 200 },
+                          fullWidth: true,
+                          disabled: formData.payroll_type_id === '1'
+                      } 
+                  }}
+                />
+              </LocalizationProvider>
 
               {formData.payroll_type_id === '1' && (
                 <>

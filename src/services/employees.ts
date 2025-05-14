@@ -9,3 +9,13 @@ export const editEmployee = async (employeeId: string, employeeData: any) => {
         throw error;
     }
 }
+
+export const getEmployees = async (params: any) => {
+    try {
+        const response = await api.get("/employee", { params });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching employees:", error);
+        throw error;
+    }
+}

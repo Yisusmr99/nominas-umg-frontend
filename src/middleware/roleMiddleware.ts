@@ -6,12 +6,14 @@ const EMPLOYEE_ROLE_ID = 2;
 export const routeAccessMap = {
     '/dashboard': [ADMIN_ROLE_ID, EMPLOYEE_ROLE_ID],
     '/payrolls': [ADMIN_ROLE_ID],
+    '/reports': [ADMIN_ROLE_ID],
     '/users': [ADMIN_ROLE_ID],
     '/deductions': [ADMIN_ROLE_ID],
     '/bonus': [ADMIN_ROLE_ID],
     '/contract-types': [ADMIN_ROLE_ID],
     '/payroll-types': [ADMIN_ROLE_ID],
-    '/payments': [EMPLOYEE_ROLE_ID]
+    '/payments': [EMPLOYEE_ROLE_ID],
+    '/performance-evaluations': [ADMIN_ROLE_ID, EMPLOYEE_ROLE_ID],
 };
 
 export const hasAccess = (path: string): boolean => {

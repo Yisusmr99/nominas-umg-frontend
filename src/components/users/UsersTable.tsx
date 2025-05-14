@@ -84,23 +84,24 @@ export default function UsersTable({ users, loading, onEdit, onDelete }: UsersTa
                                                 </td>
                                             ))}
                                             <td className="py-4 text-center text-sm font-medium sm:pr-3">
+                                                {/* {dato.employee && ( */}
+                                                    <>
+                                                        <div className="relative inline-block group">
+                                                            <UserCircleIcon 
+                                                                className="h-4.5 w-4.5 text-purple-700 font-medium text-center inline-flex items-center cursor-pointer" 
+                                                                aria-hidden="true"
+                                                                onClick={() => onEdit(dato.id, 'empleado')} 
+                                                            />
+                                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                                                                Editar empleado
+                                                            </div>
+                                                        </div>
+                                                        &nbsp;&nbsp;&nbsp;
+                                                    </>
+                                                {/* )} */}
                                                 {dato.is_active === 1 && (
                                                     <>
-                                                        {dato.employee && (
-                                                            <>
-                                                                <div className="relative inline-block group">
-                                                                    <UserCircleIcon 
-                                                                        className="h-4.5 w-4.5 text-purple-700 font-medium text-center inline-flex items-center cursor-pointer" 
-                                                                        aria-hidden="true"
-                                                                        onClick={() => onEdit(dato.id, 'empleado')} 
-                                                                    />
-                                                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
-                                                                        Editar empleado
-                                                                    </div>
-                                                                </div>
-                                                                &nbsp;&nbsp;&nbsp;
-                                                            </>
-                                                        )}
+                                                        
                                                         <div className="relative inline-block group">
                                                             <PencilIcon 
                                                                 className="h-5 w-5 text-blue-700 font-medium text-center inline-flex items-center cursor-pointer" 

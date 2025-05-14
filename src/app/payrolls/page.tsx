@@ -97,7 +97,6 @@ export default function PayrollsPage() {
 
     const handlePaySelected = async (payrollIds: number[]) => {
         if (!payrollIds.length) return;
-        console.log("Selected Payroll IDs: ", payrollIds);
         
         try {
             setCreateUpdateLoading(true);

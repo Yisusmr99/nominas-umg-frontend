@@ -3,15 +3,19 @@ import { useEffect, useState } from 'react';
 import PayrollDetailModal from '@/components/payrolls/PayrollDetailModal';
 import { getByEmployee } from '@/services/payrolls';
 import Toast from '@/components/ui/Toast';
-import { Backdrop, CircularProgress, TextField } from '@mui/material';
+import { Backdrop, CircularProgress } from '@mui/material';
 import EmployeePayrollsTable from '@/components/payrolls/EmployeePayrollsTable';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 
 const title = "Mis Nóminas";
 const description = "Lista de nóminas pagadas.";
 
 const getDefaultDates = () => {
     const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+    const firstDay = new Date(now.getFullYear(), 0, 1)  // 0 = January, 1 = first day
         .toISOString().split('T')[0];
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
         .toISOString().split('T')[0];
@@ -24,8 +28,8 @@ export default function PaymentsPage() {
     const [selectedPayroll, setSelectedPayroll] = useState<any>(null);
     const [payrollsData, setPayrollsData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [periodStart, setPeriodStart] = useState(firstDay);
-    const [periodEnd, setPeriodEnd] = useState(lastDay);
+    const [periodStart, setPeriodStart] = useState(dayjs(firstDay));
+    const [periodEnd, setPeriodEnd] = useState(dayjs(lastDay));
 
     const handleViewDetail = (payroll: any) => {
         setSelectedPayroll(payroll);
@@ -48,8 +52,8 @@ export default function PaymentsPage() {
             const user = JSON.parse(userString);
             
             const response = await getByEmployee(user.id, {
-                period_start: periodStart,
-                period_end: periodEnd
+                period_start: periodStart.format('YYYY-MM-DD'),
+                period_end: periodEnd.format('YYYY-MM-DD')
             });
             setPayrollsData(response.data);
         }
@@ -81,22 +85,38 @@ export default function PaymentsPage() {
                             </p>
                         </div>
                         <div className="flex gap-4">
-                            <TextField
-                                type="date"
-                                label="Fecha Inicio"
-                                value={periodStart}
-                                onChange={(e) => setPeriodStart(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
-                                size="small"
-                            />
-                            <TextField
-                                type="date"
-                                label="Fecha Fin"
-                                value={periodEnd}
-                                onChange={(e) => setPeriodEnd(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
-                                size="small"
-                            />
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    label="Fecha inicial"
+                                    value={periodStart}
+                                    onChange={(newValue) => {
+                                        if (newValue) {
+                                            setPeriodStart(newValue);
+                                        }
+                                    }}
+                                    slotProps={{ 
+                                        textField: { 
+                                            size: 'small',
+                                            sx: { minWidth: 200 }
+                                        } 
+                                    }}
+                                />
+                                <DatePicker
+                                    label="Fecha final"
+                                    value={periodEnd}
+                                    onChange={(newValue) => {
+                                        if (newValue) {
+                                            setPeriodEnd(newValue);
+                                        }
+                                    }}
+                                    slotProps={{ 
+                                        textField: { 
+                                            size: 'small',
+                                            sx: { minWidth: 200 }
+                                        } 
+                                    }}
+                                />
+                            </LocalizationProvider>
                         </div>
                     </div>
 
