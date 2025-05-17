@@ -59,9 +59,9 @@ export default function LoginPage() {
             <Image
               src="/logo.png"
               alt="Logo"
-              width={100 * 1.5}
+              width={100 * 2}
               height={100 * 1.5}
-              className="mx-auto w-auto"
+              className="mx-auto h-24 w-auto"
               priority
             />
           <h2 className="mt-8 text-2xl font-bold tracking-tight text-gray-900">
