@@ -17,7 +17,8 @@ import {
 import { 
   ChevronDownIcon, ArrowTrendingDownIcon, ArrowTrendingUpIcon,
   ClipboardDocumentCheckIcon, ReceiptPercentIcon, UserGroupIcon,
-  DocumentPlusIcon, DocumentChartBarIcon, PresentationChartLineIcon
+  DocumentPlusIcon, DocumentChartBarIcon, PresentationChartLineIcon,
+  RocketLaunchIcon
 } from '@heroicons/react/20/solid'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -33,6 +34,7 @@ const navigationItems = [
   { name: 'Usuarios', href: '/users', icon: UserGroupIcon },
   { name: 'Reportes', href: '/reports', icon: DocumentChartBarIcon },
   { name: 'Evaluaciones de desempeño', href: '/performance-evaluations', icon: PresentationChartLineIcon },
+  { name: 'Vacaiones', href: '/vacations', icon: RocketLaunchIcon },
   { name: 'Deducciones', href: '/deductions', icon: ArrowTrendingDownIcon },
   { name: 'Bonos', href: '/bonus', icon: ArrowTrendingUpIcon },
   { name: 'Tipos de contrato', href: '/contract-types', icon: ClipboardDocumentCheckIcon },
@@ -263,10 +265,12 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 <Menu as="div" className="relative">
                   <MenuButton className="-m-1.5 flex items-center p-1.5">
                     <span className="sr-only">Open user menu</span>
-                    <img
-                      alt=""
+                    <Image
+                      alt="Profile picture"
                       src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png"
-                      className="size-8 rounded-full bg-gray-50"
+                      width={32}
+                      height={32}
+                      className="rounded-full bg-gray-50"
                     />
                     <span className="hidden lg:flex lg:items-center">
                       <span className="ml-4 text-sm/6 font-semibold text-gray-900">

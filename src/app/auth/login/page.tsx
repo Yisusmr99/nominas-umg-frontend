@@ -134,10 +134,12 @@ export default function LoginPage() {
 
       {/* Columna de la imagen */}
       <div className="relative hidden lg:block w-1/2">
-        <img
+        <Image
           alt=""
           src="https://images.unsplash.com/photo-1496917756835-20cb06e75b4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="object-cover"
+          fill
+          priority
         />
       </div>
     </div>

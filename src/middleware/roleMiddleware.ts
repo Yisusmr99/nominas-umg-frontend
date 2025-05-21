@@ -14,6 +14,7 @@ export const routeAccessMap = {
     '/payroll-types': [ADMIN_ROLE_ID],
     '/payments': [EMPLOYEE_ROLE_ID],
     '/performance-evaluations': [ADMIN_ROLE_ID, EMPLOYEE_ROLE_ID],
+    '/vacations': [ADMIN_ROLE_ID, EMPLOYEE_ROLE_ID],
 };
 
 export const hasAccess = (path: string): boolean => {
